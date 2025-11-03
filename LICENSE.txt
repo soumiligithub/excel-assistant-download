@@ -1,0 +1,42 @@
+"""
+Excel Assistant - Local Excel File Management Tool
+==================================================
+
+Copyright (c) 2025 Soumili Panja
+All Rights Reserved
+
+Author: Soumili Panja
+Email: Soumili.panja.074@gmail.com
+Institution: Bengal Institute of Business Studies, Kolkata
+Date: November 2025
+
+Description:
+    A powerful local Excel file management assistant with natural language
+    command interface, auto-complete suggestions, and comprehensive help system.
+    
+Features:
+    - Natural language command processing
+    - Smart auto-complete with arrow key navigation
+    - Real-time command suggestions
+    - Built-in searchable help system
+    - Local file operations (no cloud dependency)
+    
+License:
+    This software is provided for educational and personal use.
+    Commercial use requires explicit permission from the author.
+    
+Disclaimer:
+    This software is provided "as is" without warranty of any kind.
+    The author is not responsible for any data loss or damages.
+
+Version: 1.0.0
+"""
+
+# Add this header to the top of your main files:
+# - excel_assistant_enhanced_gui.py
+# - excel_assistant.py (if separate)
+
+# Instructions:
+# 1. Copy this copyright header to the top of each Python file
+# 2. Update version number as needed
+# 3. Keep this information intact in all distributions
