@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Excel Assistant - Download</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .container {
+            max-width: 900px;
+            width: 100%;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        
+        .content {
+            padding: 40px;
+        }
+        
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+        
+        .feature {
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .feature h3 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+        
+        .download-section {
+            text-align: center;
+            padding: 40px 0;
+            border-top: 2px solid #e9ecef;
+            margin-top: 30px;
+        }
+        
+        .download-btn {
+            display: inline-block;
+            padding: 18px 40px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 50px;
+            font-size: 1.2em;
+            font-weight: bold;
+            transition: transform 0.3s, box-shadow 0.3s;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+            cursor: pointer;
+            border: none;
+        }
+        
+        .download-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        }
+        
+        .requirements {
+            background: #fff3cd;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 30px 0;
+            border-left: 4px solid #ffc107;
+        }
+        
+        .requirements h3 {
+            color: #856404;
+            margin-bottom: 10px;
+        }
+        
+        .requirements ul {
+            list-style-position: inside;
+            color: #856404;
+        }
+        
+        .instructions {
+            background: #d1ecf1;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 30px 0;
+            border-left: 4px solid #17a2b8;
+        }
+        
+        .instructions h3 {
+            color: #0c5460;
+            margin-bottom: 15px;
+        }
+        
+        .instructions ol {
+            margin-left: 20px;
+            color: #0c5460;
+        }
+        
+        .instructions li {
+            margin: 10px 0;
+            line-height: 1.6;
+        }
+        
+        .footer {
+            background: #f8f9fa;
+            padding: 30px;
+            text-align: center;
+            color: #6c757d;
+        }
+        
+        .footer a {
+            color: #667eea;
+            text-decoration: none;
+        }
+        
+        .version {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            margin-left: 10px;
+        }
+
+        code {
+            background: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            display: inline-block;
+            margin-top: 5px;
+            font-family: 'Courier New', monospace;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📊 Excel Assistant <span class="version">v1.0.0</span></h1>
+            <p>Your Smart Local Excel File Management Tool</p>
+        </div>
+        
+        <div class="content">
+            <h2>✨ Key Features</h2>
+            <div class="features">
+                <div class="feature">
+                    <h3>🎯 Smart Auto-Complete</h3>
+                    <p>Type and get instant command suggestions with arrow key navigation</p>
+                </div>
+                <div class="feature">
+                    <h3>💬 Natural Language</h3>
+                    <p>Use simple commands like "show me all files" or "create new sheet"</p>
+                </div>
+                <div class="feature">
+                    <h3>📚 Built-in Help</h3>
+                    <p>Searchable help system with all commands at your fingertips</p>
+                </div>
+                <div class="feature">
+                    <h3>🔒 100% Local</h3>
+                    <p>No cloud, no internet required. Your data stays on your computer</p>
+                </div>
+            </div>
+            
+            <div class="requirements">
+                <h3>⚙️ System Requirements</h3>
+                <ul>
+                    <li>Python 3.7 or higher</li>
+                    <li>Windows, macOS, or Linux</li>
+                    <li>50MB free disk space</li>
+                    <li>Required packages: tkinter, pandas, openpyxl</li>
+                </ul>
+            </div>
+            
+            <div class="instructions">
+                <h3>📥 Installation Instructions</h3>
+                <ol>
+                    <li><strong>Download:</strong> Click the download button below to get the ZIP file</li>
+                    <li><strong>Extract:</strong> Unzip the downloaded file to your desired location</li>
+                    <li><strong>Install Dependencies:</strong> Open terminal/command prompt and run:
+                        <br><code>pip install -r requirements.txt</code>
+                    </li>
+                    <li><strong>Run:</strong> Launch the application:
+                        <br><code>python excel_assistant_enhanced_gui.py</code>
+                    </li>
+                    <li><strong>Start Using:</strong> Type commands like "show help" to get started!</li>
+                </ol>
+            </div>
+            
+            <div class="download-section">
+                <h2>🚀 Ready to Get Started?</h2>
+                <p style="margin: 20px 0; color: #6c757d;">Download the complete package now</p>
+                <a href="#" class="download-btn" id="downloadBtn">⬇️ Download Excel Assistant</a>
+                <p style="margin-top: 20px; font-size: 0.9em; color: #6c757d;">
+                    File size: ~50KB | Version 1.0.0 | Last updated: November 2025
+                </p>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p><strong>Developed by Soumili Panja</strong></p>
+            <p>Bengal Institute of Business Studies, Kolkata</p>
+            <p style="margin-top: 10px;">
+                📧 <a href="mailto:Soumili.panja.074@gmail.com">Soumili.panja.074@gmail.com</a>
+            </p>
+            <p style="margin-top: 20px; font-size: 0.9em;">
+                © 2025 Soumili Panja. All Rights Reserved.<br>
+                For educational and personal use. Commercial use requires permission.
+            </p>
+        </div>
+    </div>
+    
+    <script>
+        document.getElementById('downloadBtn').addEventListener('click', function(e) {
+            e.preventDefault();
+            alert('To enable downloads:\n\n1. Upload your ZIP file to GitHub (in the same repository)\n2. Replace "#" in the href attribute with:\n   https://github.com/YOUR_USERNAME/REPO_NAME/raw/main/FILENAME.zip\n\nExample:\n   href="https://github.com/soumilipanja/excel-assistant/raw/main/ExcelAssistant.zip"');
+        });
+    </script>
+</body>
+</html>
