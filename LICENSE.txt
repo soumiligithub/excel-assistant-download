@@ -1,6 +1,4 @@
-"""
-Excel Assistant - Local Excel File Management Tool
-==================================================
+Excel Assistant - Copyright Notice
 
 Copyright (c) 2025 Soumili Panja
 All Rights Reserved
@@ -8,16 +6,28 @@ All Rights Reserved
 Author: Soumili Panja
 Email: Soumili.panja.074@gmail.com
 Institution: Bengal Institute of Business Studies, Kolkata
-Date: November 2025
 
-Description:
-    A powerful local Excel file management assistant with natural language
-    command interface, auto-complete suggestions, and comprehensive help system.
-    
-Features:
-    - Natural language command processing
-    - Smart auto-complete with arrow key navigation
-    - Real-time command suggestions
+LICENSE TERMS:
+
+1. EDUCATIONAL & PERSONAL USE
+   - This software may be used freely for educational and personal purposes
+   - Students and educators may use this software in academic settings
+
+2. COMMERCIAL USE
+   - Commercial use requires explicit written permission from the author
+   - Contact: Soumili.panja.074@gmail.com
+
+3. DISTRIBUTION
+   - You may share this software provided all copyright notices remain intact
+   - Modified versions must be clearly marked as such
+
+4. WARRANTY DISCLAIMER
+   This software is provided "as is" without warranty of any kind, express or
+   implied. The author shall not be liable for any damages arising from use.
+
+5. ATTRIBUTION
+   - All distributions must credit the original author
+   - Copyright notices must not be removed or altered
     - Built-in searchable help system
     - Local file operations (no cloud dependency)
     
@@ -40,3 +50,4 @@ Version: 1.0.0
 # 1. Copy this copyright header to the top of each Python file
 # 2. Update version number as needed
 # 3. Keep this information intact in all distributions
+
