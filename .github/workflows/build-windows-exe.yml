@@ -4,7 +4,10 @@ on:
   workflow_dispatch:
   push:
     tags:
-      - 'v*'     # run when you push a tag like v1.0.0
+      - 'v*'
+
+permissions:
+  contents: write
 
 jobs:
   build-windows:
