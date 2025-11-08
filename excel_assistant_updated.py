@@ -488,6 +488,55 @@ class SimpleChatBot:
             if pref in text:
                 return text.split(pref, 1)[1].strip()
         return None
+        
+    def generate_recommendations(self):
+        """Return a list of human-readable recommendations for handling the loaded data."""
+        if self.analyzer.df is None:
+            return ["❌ No data loaded. Load a file first to get recommendations."]
+
+        df = self.analyzer.df.copy()
+        total_rows = len(df)
+        recs = []
+
+        # 1) Columns and dtypes
+        cols = df.columns.tolist()
+        recs.append(f"Columns detected: {', '.join(cols)}")
+
+        # 2) Missing values summary
+        miss = df.isnull().sum()
+        miss_cols = {c:int(miss[c]) for c in df.columns if miss[c] > 0}
+        if not miss_cols:
+            recs.append("✅ No missing values detected.")
+        else:
+            recs.append("🔎 Missing values summary:")
+            for c, count in miss_cols.items():
+                pct = (count / total_rows) * 100 if total_rows>0 else 0.0
+                recs.append(f"  • {c}: {count} missing ({pct:.2f}%)")
+            # suggestions per column
+            for c, count in miss_cols.items():
+                # guess dtype
+                dtype = df[c].dtype
+                if np.issubdtype(dtype, np.number):
+                    recs.append(f"Recommendation for '{c}': numeric column — consider filling missing values with median (robust) or mean; or remove rows if missing <5% or use model-based imputation for richer approaches.")
+                else:
+                    recs.append(f"Recommendation for '{c}': categorical/text — consider filling with mode, 'Unknown' placeholder, or treat as a separate category; if many unique values, consider feature hashing / grouping rare categories.")
+        # 3) Outliers hint
+        num_cols = df.select_dtypes(include=[np.number]).columns.tolist()
+        if num_cols:
+            recs.append(f"Numeric columns detected: {', '.join(num_cols)} — consider checking z-scores or IQR to find outliers.")
+        else:
+            recs.append("No numeric columns detected — skip numeric-specific transforms.")
+
+        # 4) Quick action suggestions (commands that user can type)
+        recs.append("Quick actions you can type:")
+        for c in cols[:10]:
+            recs.append(f"  • Show histogram of {c}")
+            recs.append(f"  • Percentiles for {c}")
+            recs.append(f"  • Find outliers in {c}")
+
+        # store last recommendations
+        self.last_recommendations = recs
+        return recs
 
 
 # ============================================================================
@@ -589,6 +638,14 @@ class AutocompleteEntry(tk.Frame):
         self.text.delete("1.0", tk.END)
         self.hide_dropdown()
 
+    def set_suggestions(self, suggestions):
+        """Update the suggestions list dynamically (used after loading a file)."""
+        self.suggestions = suggestions or []
+        # reset dropdown if visible
+        if hasattr(self, 'dropdown') and self.dropdown.winfo_ismapped():
+            self.hide_dropdown()
+
+
 
 # ============================================================================
 # HELP PANEL (searchable help)
@@ -668,7 +725,7 @@ class ExcelAssistantGUI:
 
     def __init__(self, root):
         self.root = root
-        self.root.title("Excel Analysis Assistant")
+        self.root.title("Data Analyser Bloop")
         self.root.geometry("1200x700")
 
         self.command_suggestions = [
@@ -705,8 +762,8 @@ class ExcelAssistantGUI:
         header_frame.pack(fill=tk.X, side=tk.TOP)
         header_frame.pack_propagate(False)
 
-        tk.Label(header_frame, text="📊 Excel Analysis Assistant", font=("Arial", 18, "bold"), bg=header_color, fg="white").pack(side=tk.LEFT, padx=20, pady=20)
-        tk.Label(header_frame, text="v1.0 | 100% Offline", font=("Arial", 9), bg=header_color, fg="white").pack(side=tk.RIGHT, padx=20)
+        tk.Label(header_frame, text="📊 Data Analyser Bloop", font=("Arial", 18, "bold"), bg=header_color, fg="white").pack(side=tk.LEFT, padx=20, pady=20)
+        tk.Label(header_frame, text="v1.0.2 | 100% Offline", font=("Arial", 9), bg=header_color, fg="white").pack(side=tk.RIGHT, padx=20)
 
         # TOOLBAR
         toolbar_frame = tk.Frame(self.root, bg=bg_color, height=60)
