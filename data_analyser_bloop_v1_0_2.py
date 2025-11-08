@@ -14,7 +14,6 @@ import matplotlib
 matplotlib.use('TkAgg')
 import matplotlib.pyplot as plt
 import seaborn as sns
-from scipy.stats import zscore
 from datetime import datetime
 from pathlib import Path
 import threading
@@ -201,31 +200,38 @@ class ChatBot:
         return "🤖 Try: 'Show summary statistics', 'Check missing values', 'Impute missing values', 'Show sample code', 'Scatter plot Age vs Salary', or 'Help'"
 
     def help_text(self):
-        return """📚 QUICK GUIDE - Data Analyser Bloop v1.0.2
+        return """📚 COMPLETE COMMAND GUIDE — Data Analyser Bloop v1.0.2
 
-📊 ANALYSIS COMMANDS:
-• Show summary statistics
-• Calculate correlations
-• Preview the data
+📊 BASIC ANALYSIS
+• Show summary statistics → display mean, std, min, max
+• Calculate correlations → show correlation matrix
+• Preview the data → view top rows of the dataset
 
-🔍 DATA CHECKS:
-• Check missing values
-• Impute missing values (simulated)
-• Show sample code for imputation
+🔍 DATA QUALITY
+• Check missing values → detect nulls and give suggestions
+• Impute missing values → show simulated imputation code (no real change)
+• Show sample code for imputation → educational code snippet
 
-📈 VISUALS:
-• Histogram of <column>
-• Scatter plot <x> vs <y>
+📈 VISUAL ANALYSIS
+• Histogram of <column> → show distribution of numeric column
+• Scatter plot <x> vs <y> → show relationship between two columns
 
-💡 TIPS:
-• Type naturally!
-• Data is never sent online.
-• Everything runs fully offline.
+🧠 SMART SUGGESTIONS
+• Type “How to handle missing data” → get LLM-style recommendations
+• Type any column name to get quick hints
+
+📦 FILE HANDLING
+• Load Excel/CSV → via Load File button
+• Export (coming soon)
+
+💡 GENERAL HELP
+• Help → show this guide
+• Credits → show developer info
 """
 
 
 # =====================================================================
-# Autocomplete Entry
+# Autocomplete Entry (unchanged)
 # =====================================================================
 class AutoCompleteEntry(tk.Frame):
     def __init__(self, parent, suggestions, **kwargs):
@@ -301,7 +307,7 @@ class AutoCompleteEntry(tk.Frame):
 
 
 # =====================================================================
-# Help Panel (re-added)
+# Help Panel (updated guide text will match ChatBot.help_text)
 # =====================================================================
 class HelpPanel(tk.Frame):
     def __init__(self, parent, **kwargs):
@@ -309,50 +315,16 @@ class HelpPanel(tk.Frame):
         self.setup_help_ui()
 
     def setup_help_ui(self):
-        title = tk.Label(self, text="📚 Quick Guide", font=("Arial", 14, "bold"), bg="#f0f0f0")
+        title = tk.Label(self, text="📚 Command Guide", font=("Arial", 14, "bold"), bg="#f0f0f0")
         title.pack(pady=10)
-
         self.help_text = scrolledtext.ScrolledText(self, wrap=tk.WORD, font=("Arial", 9), bg="white", relief=tk.FLAT, padx=10, pady=10)
         self.help_text.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
-
-        help_content = f"""
-Data Analyser Bloop v1.0.2 — Quick Guide
-
-Getting started:
- - Click 'Load File' and select an Excel (.xlsx/.xls) or .csv file.
- - Start typing natural commands in the input. Suggestions will appear as you type.
-
-Common Commands:
- - Show summary statistics
- - Calculate correlations
- - Preview data
- - Check missing values
- - Impute missing values
- - Show sample code for imputation
- - Histogram of <column>
- - Scatter plot <x> vs <y>
- - Help
-
-Missing data & recommendations:
- - Use 'Check missing values' to see counts and % missing.
- - Use 'Impute missing values' to see suggested code snippets.
- - Heuristic:
-   • <1% missing: consider dropping rows
-   • 1%–10%: median (numeric) or mode/'Unknown' (categorical)
-   • 10%–30%: model-based imputation or missing indicator
-   • >30%: consider dropping the column or collecting more data
-
-Tips:
- - Type naturally like: "Show histogram of Salary" or "Impute missing values".
- - Press Enter to send. Use the suggestions dropdown to pick commands quickly.
- - Export features are planned for a future update.
-"""
-        self.help_text.insert("1.0", help_content)
+        self.help_text.insert("1.0", ChatBot().help_text())
         self.help_text.config(state=tk.DISABLED)
 
 
 # =====================================================================
-# Main GUI
+# GUI
 # =====================================================================
 class DataAnalyserBloopApp:
     def __init__(self, root):
@@ -361,7 +333,6 @@ class DataAnalyserBloopApp:
         self.root.geometry("1200x700")
         self.bot = ChatBot()
         self.help_panel_visible = False
-
         self.setup_ui()
 
     def setup_ui(self):
@@ -379,11 +350,9 @@ class DataAnalyserBloopApp:
         self.file_label = tk.Label(toolbar, text="No file loaded", bg="#f0f0f0", fg="#666")
         self.file_label.pack(side=tk.LEFT, padx=10)
 
-        # Main layout frames
         content_frame = tk.Frame(self.root, bg="#f7f7f7")
         content_frame.pack(fill=tk.BOTH, expand=True, padx=10, pady=5)
 
-        # Left: chat / output
         left_frame = tk.Frame(content_frame, bg="#f7f7f7")
         left_frame.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 
@@ -391,14 +360,11 @@ class DataAnalyserBloopApp:
         self.text_area.pack(fill=tk.BOTH, expand=True, padx=(0, 10))
         self.text_area.insert(tk.END, "👋 Welcome to Data Analyser Bloop!\nLoad a file to get started.\n\n")
 
-        # Right: help panel (hidden initially)
         self.help_panel = HelpPanel(content_frame, bg="#f0f0f0", width=360)
 
-        # Bottom input area
         bottom_frame = tk.Frame(self.root, bg="#f0f0f0")
         bottom_frame.pack(fill=tk.X, padx=10, pady=(0, 15))
 
-        # suggestions updateable list
         self.suggestions = [
             "Show summary statistics",
             "Calculate correlations",
@@ -422,7 +388,6 @@ class DataAnalyserBloopApp:
         if path:
             response = self.bot.analyser.load_excel(path)
             self.file_label.config(text=f"📁 {Path(path).name}", fg="#4CAF50")
-            # update suggestions with column names
             try:
                 cols = list(self.bot.analyser.df.columns.astype(str))
             except Exception:
@@ -440,11 +405,9 @@ Built with Tkinter, Pandas, Matplotlib, Seaborn, Scikit-learn
         self.display("ℹ️ Info", credits)
 
     def toggle_help(self):
-        # show/hide right help panel
         if not self.help_panel_visible:
             self.help_panel.pack(side=tk.RIGHT, fill=tk.BOTH, padx=(0, 0))
             self.help_panel_visible = True
-            # update button text (find the button and change text) - easier: leave as is
         else:
             self.help_panel.pack_forget()
             self.help_panel_visible = False
@@ -466,10 +429,9 @@ Built with Tkinter, Pandas, Matplotlib, Seaborn, Scikit-learn
         self.text_area.see(tk.END)
 
 
-# =====================================================================
-# Run App
-# =====================================================================
 if __name__ == "__main__":
     root = tk.Tk()
     app = DataAnalyserBloopApp(root)
     root.mainloop()
+
+# =====================================================================
