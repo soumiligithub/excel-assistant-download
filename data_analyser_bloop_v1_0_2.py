@@ -133,6 +133,7 @@ df['Date'].fillna(method='ffill', inplace=True)
             return "❌ Load a file first."
         if col not in self.df.columns:
             return f"❌ Column '{col}' not found."
+        plt.figure()
         sns.histplot(self.df[col].dropna(), kde=True)
         plt.title(f"Histogram of {col}")
         plt.show()
@@ -143,6 +144,7 @@ df['Date'].fillna(method='ffill', inplace=True)
             return "❌ Load a file first."
         if x not in self.df.columns or y not in self.df.columns:
             return f"❌ One of the columns '{x}' or '{y}' not found."
+        plt.figure()
         sns.scatterplot(x=self.df[x], y=self.df[y])
         plt.title(f"Scatter plot: {x} vs {y}")
         plt.show()
@@ -241,6 +243,9 @@ class AutoCompleteEntry(tk.Frame):
         self.text.bind("<Return>", self.enter)
         self.listbox.bind("<Double-Button-1>", self.select)
 
+    def set_suggestions(self, suggestions):
+        self.suggestions = suggestions or []
+
     def update_list(self, event):
         key = self.text.get("1.0", tk.END).strip().lower()
         if not key:
@@ -296,6 +301,57 @@ class AutoCompleteEntry(tk.Frame):
 
 
 # =====================================================================
+# Help Panel (re-added)
+# =====================================================================
+class HelpPanel(tk.Frame):
+    def __init__(self, parent, **kwargs):
+        super().__init__(parent, **kwargs)
+        self.setup_help_ui()
+
+    def setup_help_ui(self):
+        title = tk.Label(self, text="📚 Quick Guide", font=("Arial", 14, "bold"), bg="#f0f0f0")
+        title.pack(pady=10)
+
+        self.help_text = scrolledtext.ScrolledText(self, wrap=tk.WORD, font=("Arial", 9), bg="white", relief=tk.FLAT, padx=10, pady=10)
+        self.help_text.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
+
+        help_content = f"""
+Data Analyser Bloop v1.0.2 — Quick Guide
+
+Getting started:
+ - Click 'Load File' and select an Excel (.xlsx/.xls) or .csv file.
+ - Start typing natural commands in the input. Suggestions will appear as you type.
+
+Common Commands:
+ - Show summary statistics
+ - Calculate correlations
+ - Preview data
+ - Check missing values
+ - Impute missing values
+ - Show sample code for imputation
+ - Histogram of <column>
+ - Scatter plot <x> vs <y>
+ - Help
+
+Missing data & recommendations:
+ - Use 'Check missing values' to see counts and % missing.
+ - Use 'Impute missing values' to see suggested code snippets.
+ - Heuristic:
+   • <1% missing: consider dropping rows
+   • 1%–10%: median (numeric) or mode/'Unknown' (categorical)
+   • 10%–30%: model-based imputation or missing indicator
+   • >30%: consider dropping the column or collecting more data
+
+Tips:
+ - Type naturally like: "Show histogram of Salary" or "Impute missing values".
+ - Press Enter to send. Use the suggestions dropdown to pick commands quickly.
+ - Export features are planned for a future update.
+"""
+        self.help_text.insert("1.0", help_content)
+        self.help_text.config(state=tk.DISABLED)
+
+
+# =====================================================================
 # Main GUI
 # =====================================================================
 class DataAnalyserBloopApp:
@@ -304,6 +360,7 @@ class DataAnalyserBloopApp:
         self.root.title("Data Analyser Bloop v1.0.2")
         self.root.geometry("1200x700")
         self.bot = ChatBot()
+        self.help_panel_visible = False
 
         self.setup_ui()
 
@@ -316,15 +373,32 @@ class DataAnalyserBloopApp:
         toolbar = tk.Frame(self.root, bg="#f0f0f0")
         toolbar.pack(fill=tk.X)
         tk.Button(toolbar, text="📂 Load File", command=self.load_file, bg="#4CAF50", fg="white", relief=tk.FLAT, padx=20, pady=5).pack(side=tk.LEFT, padx=10, pady=10)
-        tk.Button(toolbar, text="ℹ️ Credits", command=self.show_credits, bg="#2196F3", fg="white", relief=tk.FLAT, padx=15, pady=5).pack(side=tk.RIGHT, padx=10, pady=10)
+        tk.Button(toolbar, text="📚 Show Help", command=self.toggle_help, bg="#2196F3", fg="white", relief=tk.FLAT, padx=12, pady=5).pack(side=tk.RIGHT, padx=10, pady=10)
+        tk.Button(toolbar, text="ℹ️ Credits", command=self.show_credits, bg="#9C27B0", fg="white", relief=tk.FLAT, padx=12, pady=5).pack(side=tk.RIGHT, padx=10, pady=10)
 
         self.file_label = tk.Label(toolbar, text="No file loaded", bg="#f0f0f0", fg="#666")
         self.file_label.pack(side=tk.LEFT, padx=10)
 
-        self.text_area = scrolledtext.ScrolledText(self.root, wrap=tk.WORD, bg="white", font=("Arial", 10))
-        self.text_area.pack(fill=tk.BOTH, expand=True, padx=10, pady=5)
+        # Main layout frames
+        content_frame = tk.Frame(self.root, bg="#f7f7f7")
+        content_frame.pack(fill=tk.BOTH, expand=True, padx=10, pady=5)
+
+        # Left: chat / output
+        left_frame = tk.Frame(content_frame, bg="#f7f7f7")
+        left_frame.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+
+        self.text_area = scrolledtext.ScrolledText(left_frame, wrap=tk.WORD, bg="white", font=("Arial", 10))
+        self.text_area.pack(fill=tk.BOTH, expand=True, padx=(0, 10))
         self.text_area.insert(tk.END, "👋 Welcome to Data Analyser Bloop!\nLoad a file to get started.\n\n")
 
+        # Right: help panel (hidden initially)
+        self.help_panel = HelpPanel(content_frame, bg="#f0f0f0", width=360)
+
+        # Bottom input area
+        bottom_frame = tk.Frame(self.root, bg="#f0f0f0")
+        bottom_frame.pack(fill=tk.X, padx=10, pady=(0, 15))
+
+        # suggestions updateable list
         self.suggestions = [
             "Show summary statistics",
             "Calculate correlations",
@@ -337,17 +411,24 @@ class DataAnalyserBloopApp:
             "Help"
         ]
 
-        self.input_bar = AutoCompleteEntry(self.root, self.suggestions, bg="white")
-        self.input_bar.pack(fill=tk.X, padx=10, pady=10)
+        self.input_bar = AutoCompleteEntry(bottom_frame, self.suggestions, bg="white")
+        self.input_bar.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=(0, 10))
 
-        send_btn = tk.Button(self.root, text="Send ➤", bg="#667eea", fg="white", font=("Arial", 12, "bold"), relief=tk.FLAT, command=self.send_message)
-        send_btn.pack(pady=(0, 15))
+        send_btn = tk.Button(bottom_frame, text="Send ➤", bg="#667eea", fg="white", font=("Arial", 12, "bold"), relief=tk.FLAT, command=self.send_message)
+        send_btn.pack(side=tk.RIGHT)
 
     def load_file(self):
         path = filedialog.askopenfilename(title="Select Excel/CSV File", filetypes=[("Excel/CSV", "*.xlsx *.xls *.csv")])
         if path:
             response = self.bot.analyser.load_excel(path)
             self.file_label.config(text=f"📁 {Path(path).name}", fg="#4CAF50")
+            # update suggestions with column names
+            try:
+                cols = list(self.bot.analyser.df.columns.astype(str))
+            except Exception:
+                cols = []
+            new_suggestions = self.suggestions + cols
+            self.input_bar.set_suggestions(new_suggestions)
             self.display("🤖 Assistant", response)
 
     def show_credits(self):
@@ -357,6 +438,16 @@ Developed by Soumili Panja (2025)
 Built with Tkinter, Pandas, Matplotlib, Seaborn, Scikit-learn
 100% Offline"""
         self.display("ℹ️ Info", credits)
+
+    def toggle_help(self):
+        # show/hide right help panel
+        if not self.help_panel_visible:
+            self.help_panel.pack(side=tk.RIGHT, fill=tk.BOTH, padx=(0, 0))
+            self.help_panel_visible = True
+            # update button text (find the button and change text) - easier: leave as is
+        else:
+            self.help_panel.pack_forget()
+            self.help_panel_visible = False
 
     def send_message(self):
         msg = self.input_bar.get_text()
