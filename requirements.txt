@@ -2,8 +2,4 @@ pandas
 numpy
 matplotlib
 seaborn
-scipy
 scikit-learn
-pyinstaller
-openpyxl
-xlrd
